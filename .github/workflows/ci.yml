@@ -50,13 +50,13 @@ jobs:
           save-if: false # We use a cache computed from the master branch. Must not save to this key.
 
       - name: Check if ${{ matrix.crate }} compiles on MSRV (Rust ${{ steps.parse-msrv.outputs.version }})
-        run: cargo +${{ steps.parse-msrv.outputs.version }} check --package ${{ matrix.crate }} --all-features
-
-      - name: Check if we compile without any features activated
-        run: cargo check --package ${{ matrix.crate }} --no-default-features
+        run: cargo +${{ steps.parse-msrv.outputs.version }} build --package ${{ matrix.crate }} --all-features
 
       - name: Run all tests
         run: cargo test --package ${{ matrix.crate }} --all-features
+
+      - name: Check if we compile without any features activated
+        run: cargo build --package ${{ matrix.crate }} --no-default-features
 
       - name: Check if crate has been released
         id: check-released
