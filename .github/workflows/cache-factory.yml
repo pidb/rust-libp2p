@@ -24,28 +24,22 @@ jobs:
           echo "versions=${RUST_VERSIONS}" >> $GITHUB_OUTPUT
 
       - name: Install Rust versions
-        run: echo '${{ steps.find-rust-versions.outputs.versions }}' | jq '.[]' | xargs rustup install
+        run: |
+           echo '${{ steps.find-rust-versions.outputs.versions }}' | jq '.[]' | xargs rustup install
+           rustup update stable
 
       - uses: Swatinem/rust-cache@359a70e43a0bb8a13953b04a90f76428b4959bb6 # v2.2.0
         with:
           shared-key: master # Other jobs can use this cache key to restore. They MUST NEVER save to this cache key.
 
       - name: Compile workspace with stable Rust
-        run: |
-          cargo +stable build --no-default-features --workspace
-          cargo +stable build --all-features --workspace
+        run: cargo +stable build --all-features --all-targets --workspace
 
       - name: Compile each crate on its MSRV with all features
         run: |
           cargo metadata --format-version=1 --no-deps | \
           jq -r '.packages[] | select(.rust_version != null) | "+\(.rust_version) build --all-features --package \(.name)"' |
-          xargs -L 1 cargo
-
-      - name: Compile each crate on its MSRV without features
-        run: |
-          cargo metadata --format-version=1 --no-deps | \
-          jq -r '.packages[] | select(.rust_version != null) | "+\(.rust_version) build --package \(.name)"' |
-          xargs -L 1 cargo
+          xargs --verbose -L 1 cargo
 
       - name: Render docs
         run: cargo +stable doc --all-features --workspace
