@@ -33,21 +33,13 @@ jobs:
           shared-key: master-${{ hashFiles('**/Cargo.toml') }} # Other jobs can use this cache key to restore. They MUST NEVER save to this cache key.
 
       - name: Compile workspace with stable Rust
-        run: |
-          cargo +stable build --no-default-features --workspace
-          cargo +stable build --all-features --workspace
+        run: cargo +stable build --all-features --all-targets --workspace
 
       - name: Compile each crate on its MSRV with all features
         run: |
           cargo metadata --format-version=1 --no-deps | \
           jq -r '.packages[] | select(.rust_version != null) | "+\(.rust_version) build --all-features --package \(.name)"' |
-          xargs -L 1 cargo
-
-      - name: Compile each crate on its MSRV without features
-        run: |
-          cargo metadata --format-version=1 --no-deps | \
-          jq -r '.packages[] | select(.rust_version != null) | "+\(.rust_version) build --package \(.name)"' |
-          xargs -L 1 cargo
+          xargs --verbose -L 1 cargo
 
       - name: Render docs
         run: cargo +stable doc --all-features --workspace
