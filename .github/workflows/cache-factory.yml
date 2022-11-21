@@ -33,7 +33,7 @@ jobs:
           shared-key: master-${{ hashFiles('**/Cargo.toml') }} # Other jobs can use this cache key to restore. They MUST NEVER save to this cache key.
 
       - name: Compile workspace with stable Rust
-        run: cargo +stable build --all-features --all-targets --workspace
+        run: cargo +stable test --all-features --all-targets --workspace --no-run
 
       - name: Compile each crate on its MSRV with all features
         run: |
