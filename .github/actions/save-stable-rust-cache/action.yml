@@ -1,0 +1,11 @@
+name: Save stable Rust cache
+description: Save cache on master branch for stable Rust
+runs:
+  using: "composite"
+  steps:
+    - uses: martijnhols/actions-cache/save@0c8b146960b781c0cf795fb1fa4a0e183f82ac9b # v3
+      with:
+        path: |
+          ~/.cargo
+          ./target
+        key: rust-stable-${{ hashFiles('**/Cargo.toml') }}
