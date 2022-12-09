@@ -1,0 +1,15 @@
+name: Restore MSRV cache
+description: Restore cache from master branch for a specific Rust version
+inputs:
+  rust:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: martijnhols/actions-cache/restore@0c8b146960b781c0cf795fb1fa4a0e183f82ac9b # v3
+      with:
+        path: ./target
+        key: rust-${{ inputs.rust }}-msrv-${{ hashFiles('**/Cargo.toml') }}
+        restore-keys: |
+          rust-${{ inputs.rust }}-msrv-${{ hashFiles('**/Cargo.toml') }}
+          rust-${{ inputs.rust }}-msrv-
