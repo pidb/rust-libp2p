@@ -8,5 +8,7 @@ runs:
   steps:
     - uses: martijnhols/actions-cache/save@0c8b146960b781c0cf795fb1fa4a0e183f82ac9b # v3
       with:
-        path: ./target
+        path: |
+          ~/.cargo
+          ./target
         key: rust-${{ inputs.rust }}-msrv-${{ hashFiles('**/Cargo.toml') }}
