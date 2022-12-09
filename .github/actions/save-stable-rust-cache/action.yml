@@ -1,5 +1,5 @@
-name: Restore master cache
-description: Restore cache from master branch
+name: Save stable Rust cache
+description: Save cache on master branch for stable Rust
 runs:
   using: "composite"
   steps:
@@ -8,4 +8,4 @@ runs:
         path: |
           ~/.cargo
           ./target
-        key: rust-master-${{ hashFiles('**/Cargo.toml') }}
+        key: rust-stable-${{ hashFiles('**/Cargo.toml') }}
