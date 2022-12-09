@@ -155,7 +155,7 @@ jobs:
           toolchain: stable
           override: true
 
-      - uses: ./.github/actions/restore-master-cache
+      - uses: ./.github/actions/restore-stable-rust-cache
 
       - name: Check rustdoc links
         run: RUSTDOCFLAGS="--deny rustdoc::broken_intra_doc_links --deny warnings" cargo doc --verbose --workspace --no-deps --all-features --document-private-items
@@ -184,7 +184,7 @@ jobs:
           override: true
           components: clippy
 
-      - uses: ./.github/actions/restore-master-cache
+      - uses: ./.github/actions/restore-stable-rust-cache
 
       - name: Run cargo clippy
         uses: actions-rs/cargo@844f36862e911db73fe0815f00a4a2602c279505 # v1.0.3
@@ -208,7 +208,7 @@ jobs:
           toolchain: stable
           override: true
 
-      - uses: ./.github/actions/restore-master-cache
+      - uses: ./.github/actions/restore-stable-rust-cache
 
       - name: Run ipfs-kad example
         run: RUST_LOG=libp2p_swarm=debug,libp2p_kad=trace,libp2p_tcp=debug cargo run --example ipfs-kad --features full
