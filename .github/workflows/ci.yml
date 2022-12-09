@@ -46,10 +46,14 @@ jobs:
           toolchain: stable
           override: true
 
-      - uses: ./.github/actions/restore-master-cache
+      - uses: ./.github/actions/restore-msrv-cache
+        with:
+          rust: ${{ steps.parse-msrv.outputs.version }}
 
       - name: Check if ${{ matrix.crate }} compiles on MSRV (Rust ${{ steps.parse-msrv.outputs.version }})
         run: cargo +${{ steps.parse-msrv.outputs.version }} build --package ${{ matrix.crate }} --all-features
+
+      - uses: ./.github/actions/restore-stable-rust-cache
 
       - name: Run all tests
         run: cargo test --package ${{ matrix.crate }} --all-features
