@@ -6,7 +6,7 @@ name: Cache factory
 on:
   push:
     branches:
-      - master # Cache is only created on master branch.
+      - master # Caches are only created on master branch.
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
