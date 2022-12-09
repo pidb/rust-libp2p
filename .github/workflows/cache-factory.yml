@@ -30,15 +30,7 @@ jobs:
            echo '${{ steps.find-rust-versions.outputs.versions }}' | jq '.[]' | xargs rustup install
            rustup update stable
 
-      - uses: martijnhols/actions-cache/restore@v3
-        with:
-          path: |
-            ~/.cargo
-            ./target
-          key: rust-master-${{ hashFiles('**/Cargo.toml') }}
-          restore-keys: |
-            rust-master-${{ hashFiles('**/Cargo.toml') }}
-            rust-master-
+      - uses: ./.github/actions/restore-master-cache
 
       - name: Compile workspace with stable Rust
         run: cargo +stable test --all-features --all-targets --workspace --no-run
@@ -56,9 +48,4 @@ jobs:
         run: |
           cargo install cargo-semver-checks --locked
 
-      - uses: martijnhols/actions-cache/save@v3
-        with:
-          path: |
-            ~/.cargo
-            ./target
-          key: rust-master-${{ hashFiles('**/Cargo.toml') }}
+      - uses: ./.github/actions/save-master-cache
