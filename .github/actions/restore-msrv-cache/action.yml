@@ -11,5 +11,4 @@ runs:
         path: ./target
         key: rust-${{ inputs.rust }}-msrv-${{ hashFiles('**/Cargo.toml') }}
         restore-keys: |
-          rust-${{ inputs.rust }}-msrv-${{ hashFiles('**/Cargo.toml') }}
           rust-${{ inputs.rust }}-msrv-
