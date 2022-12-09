@@ -10,4 +10,5 @@ runs:
           ./target
         key: rust-stable-${{ hashFiles('**/Cargo.toml') }}
         restore-keys: |
+          rust-stable-${{ hashFiles('**/Cargo.toml') }}
           rust-stable-
