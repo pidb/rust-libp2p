@@ -32,6 +32,9 @@ jobs:
 
       - uses: ./.github/actions/restore-master-cache
 
+      - name: Disable incremental compilation # This ends up saving disk space.
+        run: echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV
+
       - name: Compile workspace with stable Rust
         run: cargo +stable test --all-features --all-targets --workspace --no-run
 
