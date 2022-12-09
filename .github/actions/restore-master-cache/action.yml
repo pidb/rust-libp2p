@@ -1,0 +1,14 @@
+name: Restore master cache
+description: Restore cache from master branch
+runs:
+  using: "composite"
+  steps:
+    - uses: martijnhols/actions-cache/restore@0c8b146960b781c0cf795fb1fa4a0e183f82ac9b # v3
+      with:
+        path: |
+          ~/.cargo
+          ./target
+        key: rust-master-${{ hashFiles('**/Cargo.toml') }}
+        restore-keys: |
+          rust-master-${{ hashFiles('**/Cargo.toml') }}
+          rust-master-
