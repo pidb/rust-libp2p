@@ -34,26 +34,26 @@ jobs:
           echo "version=${RUST_VERSION}" >> $GITHUB_OUTPUT
 
       - name: Install Rust ${{ steps.parse-msrv.outputs.version }} for MSRV check
-        uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # v1.0.7
+        uses: dtolnay/rust-toolchain@e645b0cf01249a964ec099494d38d2da0f0b349f # master
         with:
-          profile: minimal
           toolchain: ${{ steps.parse-msrv.outputs.version }}
 
-      - name: Update to latest stable Rust
-        uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # v1.0.7
+      - uses: Swatinem/rust-cache@359a70e43a0bb8a13953b04a90f76428b4959bb6 # v2.2.0
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
-
-      - uses: ./.github/actions/restore-msrv-cache
-        with:
-          rust: ${{ steps.parse-msrv.outputs.version }}
+          shared-key: msrv-cache
+          save-if: false
 
       - name: Check if ${{ matrix.crate }} compiles on MSRV (Rust ${{ steps.parse-msrv.outputs.version }})
         run: cargo +${{ steps.parse-msrv.outputs.version }} build --package ${{ matrix.crate }} --all-features
 
-      - uses: ./.github/actions/restore-stable-rust-cache
+      - uses: dtolnay/rust-toolchain@e645b0cf01249a964ec099494d38d2da0f0b349f # master
+        with:
+          toolchain: stable
+
+      - uses: Swatinem/rust-cache@359a70e43a0bb8a13953b04a90f76428b4959bb6 # v2.2.0
+        with:
+          shared-key: stable-cache
+          save-if: false
 
       - name: Run all tests
         run: cargo test --package ${{ matrix.crate }} --all-features
@@ -181,7 +181,7 @@ jobs:
           override: true
           components: clippy
 
-      - uses: ./.github/actions/restore-stable-rust-cache
+      - uses: Swatinem/rust-cache@359a70e43a0bb8a13953b04a90f76428b4959bb6 # v2.2.0
 
       - name: Run cargo clippy
         uses: actions-rs/cargo@844f36862e911db73fe0815f00a4a2602c279505 # v1.0.3
