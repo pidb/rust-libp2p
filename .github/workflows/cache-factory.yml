@@ -42,19 +42,15 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
 
-      - uses: ./.github/actions/restore-msrv-cache
+      - uses: Swatinem/rust-cache@359a70e43a0bb8a13953b04a90f76428b4959bb6 # v2.2.0
         with:
-          rust: ${{ matrix.rust }}
+          shared-key: msrv-cache
 
       - name: Compile all crates which have MSRV ${{ matrix.rust }}
         run: |
           cargo metadata --format-version=1 --no-deps | \
           jq -r '.packages[] | select(.rust_version == "${{ matrix.rust }}") | "+\(.rust_version) build --all-features --package \(.name)"' |
           xargs --verbose -L 1 cargo
-
-      - uses: ./.github/actions/save-msrv-cache
-        with:
-          rust: ${{ matrix.rust }}
 
   make_stable_rust_cache:
     runs-on: ubuntu-latest
@@ -68,16 +64,15 @@ jobs:
         with:
           toolchain: stable
 
-      - uses: ./.github/actions/restore-stable-rust-cache
+      - uses: Swatinem/rust-cache@359a70e43a0bb8a13953b04a90f76428b4959bb6 # v2.2.0
+        with:
+          shared-key: stable-cache
 
       - name: Compile workspace with stable Rust
-        run: cargo +stable test --all-features --all-targets --workspace --no-run
+        run: cargo test --all-features --all-targets --workspace --no-run
 
       - name: Render docs
-        run: cargo +stable doc --all-features --workspace
+        run: cargo doc --all-features --workspace
 
       - name: Install tools
-        run: |
-          cargo install cargo-semver-checks --locked
-
-      - uses: ./.github/actions/save-stable-rust-cache
+        run: cargo install cargo-semver-checks --locked
