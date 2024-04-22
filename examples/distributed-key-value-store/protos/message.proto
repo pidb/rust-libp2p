@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package distributedkv;
+
+message ApiRequest {
+    bytes key = 1;
+}
+
+message ApiResponse {
+    bytes key = 1;
+    bytes value = 2;
+}

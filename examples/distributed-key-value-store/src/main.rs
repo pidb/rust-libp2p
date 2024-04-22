@@ -22,6 +22,7 @@
 
 mod behaviour;
 mod codec;
+mod message;
 
 use async_std::io;
 use futures::{prelude::*, select};
