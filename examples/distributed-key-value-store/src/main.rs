@@ -20,6 +20,9 @@
 
 #![doc = include_str!("../README.md")]
 
+mod behaviour;
+mod codec;
+
 use async_std::io;
 use futures::{prelude::*, select};
 use libp2p::kad;
