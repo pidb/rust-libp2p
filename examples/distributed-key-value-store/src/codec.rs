@@ -107,8 +107,8 @@ mod tests {
     use libp2p::request_response::Codec;
 
     use super::APICodec;
-    use crate::message::ApiRequest;
-    use crate::message::ApiResponse;
+    use crate::rpc::ApiRequest;
+    use crate::rpc::ApiResponse;
     #[tokio::test]
     async fn test_read_request() {
         let mut api_req = ApiRequest::default();

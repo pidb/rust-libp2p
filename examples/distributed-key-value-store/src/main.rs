@@ -22,9 +22,14 @@
 
 mod behaviour;
 mod codec;
+mod console;
+mod daemon;
 mod message;
+mod rpc;
+mod service;
 
 use async_std::io;
+use clap::Parser;
 use futures::{prelude::*, select};
 use libp2p::kad;
 use libp2p::kad::store::MemoryStore;
@@ -38,21 +43,38 @@ use std::error::Error;
 use std::time::Duration;
 use tracing_subscriber::EnvFilter;
 
-#[async_std::main]
+#[derive(clap::Parser)]
+pub struct App {
+    #[arg(long)]
+    rpc_server_addr: String,
+    #[arg(long)]
+    console: bool,
+}
+
+#[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<(), Box<dyn Error>> {
+    let args = App::try_parse().unwrap();
     let _ = tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env())
         .try_init();
+
+    if args.console {
+        console::run(&args.rpc_server_addr).await.unwrap();
+        return Ok(());
+    }
+
+    daemon::run(&args.rpc_server_addr).await.unwrap();
+    return Ok(());
 
     // We create a custom network behaviour that combines Kademlia and mDNS.
     #[derive(NetworkBehaviour)]
     struct Behaviour {
         kademlia: kad::Behaviour<MemoryStore>,
-        mdns: mdns::async_io::Behaviour,
+        mdns: mdns::tokio::Behaviour,
     }
 
     let mut swarm = libp2p::SwarmBuilder::with_new_identity()
-        .with_async_std()
+        .with_tokio()
         .with_tcp(
             tcp::Config::default(),
             noise::Config::new,
@@ -64,7 +86,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     key.public().to_peer_id(),
                     MemoryStore::new(key.public().to_peer_id()),
                 ),
-                mdns: mdns::async_io::Behaviour::new(
+                mdns: mdns::tokio::Behaviour::new(
                     mdns::Config::default(),
                     key.public().to_peer_id(),
                 )?,
