@@ -64,10 +64,10 @@ fn handle_kad_event(
                 record: kad::Record { key, value, .. },
                 ..
             }))) => {
-                println!(
-                    "Successfully get record {:?}",
-                    std::str::from_utf8(key.as_ref()).unwrap()
-                );
+                // println!(
+                //     "Successfully get record {:?}",
+                //     std::str::from_utf8(key.as_ref()).unwrap()
+                // );
 
                 let response_sender = match pending_response_senders.remove(&id) {
                     None => return,
@@ -98,10 +98,10 @@ fn handle_kad_event(
                 }
             }
             kad::QueryResult::PutRecord(Ok(kad::PutRecordOk { key })) => {
-                println!(
-                    "Successfully put record {:?}",
-                    std::str::from_utf8(key.as_ref()).unwrap()
-                );
+                // println!(
+                //     "Successfully put record {:?}",
+                //     std::str::from_utf8(key.as_ref()).unwrap()
+                // );
 
                 let response_sender = match pending_response_senders.remove(&id) {
                     None => return,

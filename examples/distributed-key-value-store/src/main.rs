@@ -39,10 +39,11 @@ use libp2p::{
     swarm::{NetworkBehaviour, SwarmEvent},
     tcp, yamux,
 };
+use pprof::Report;
 use std::error::Error;
+use std::io::Write;
 use std::time::Duration;
 use tracing_subscriber::EnvFilter;
-
 #[derive(clap::Parser)]
 pub struct App {
     #[arg(long)]
@@ -53,10 +54,15 @@ pub struct App {
 
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let args = App::try_parse().unwrap();
+    let args = App::parse();
     let _ = tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env())
         .try_init();
+
+    let guard = pprof::ProfilerGuardBuilder::default()
+        .frequency(1000)
+        .blocklist(&["libc", "libgcc", "pthread", "vdso"])
+        .build()?;
 
     if args.console {
         console::run(&args.rpc_server_addr).await.unwrap();
@@ -64,6 +70,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     daemon::run(&args.rpc_server_addr).await.unwrap();
+
+    if let Ok(report) = guard.report().build() {
+        // build profile
+        let mut file = std::fs::File::create("profile.pb").unwrap();
+        let profile = report.pprof().unwrap();
+
+        let mut content = Vec::new();
+        profile.encode(&mut content).unwrap();
+        file.write_all(&content).unwrap();
+
+        // build flamegraph
+        let file = std::fs::File::create("flamegraph.svg").unwrap();
+        report.flamegraph(file).unwrap();
+    };
+
     return Ok(());
 
     // We create a custom network behaviour that combines Kademlia and mDNS.

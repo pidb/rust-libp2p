@@ -40,6 +40,11 @@ tokio = { workspace = true, features = [
 tonic = "0.11.0"
 tracing = { workspace = true }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+pprof = { version = "0.13", features = [
+    "flamegraph",
+    "protobuf",
+    "protobuf-codec",
+] }
 
 [build-dependencies]
 prost-build = "0.12.4"
